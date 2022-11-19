@@ -36,7 +36,7 @@ que juntos fornecem uma estrutura robusta para implementação de aplicações W
         docker compose up -d
 3. Execute o script de inicialização
 
-        ./init.sh
+        ./start_project.sh
 
 4. Execute comandos dentro do container:
 
