@@ -1,0 +1,1 @@
+mysql://root:root@172.17.0.1:3380/symfony6-jwt

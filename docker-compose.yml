@@ -1,0 +1,49 @@
+version: "3.7"
+
+services:
+
+  # Imagem Aplicação
+  app:
+    build:
+      context: ./docker/php/
+      dockerfile: Dockerfile
+    image: app-php81
+    container_name: gerador-de-sistemas-base-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - network-project
+
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: gerador-de-sistemas-base-nginx
+    restart: unless-stopped
+    ports:
+      - "81:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - network-project
+
+ # Imagem Mysql Versão 8.0
+  db:
+    image: mysql:8.0
+    container_name: gerador-de-sistemas-base-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3304:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+    networks:
+      - network-project
+
+# Network Project
+networks:
+  network-project:
+    driver: bridge

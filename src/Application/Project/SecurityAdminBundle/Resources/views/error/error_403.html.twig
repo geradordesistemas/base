@@ -1,0 +1,29 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+
+{% block sonata_admin_content %}
+
+    <div class="col-md-12">
+        <div id="cms-block-636152cf482875.22319682" class="cms-block cms-block-element">
+            <div class="jumbotron" style="background-color: #2b2c2d; background-size: 100%;">
+                <div class="conteiner">
+
+                    <h1 class="text-center" style="color:white">
+                        403 - Acesso Negado
+                    </h1>
+                    <h3 class="text-center" style="color:white">
+                        Sem permissão de acesso!
+                    </h3>
+                    <br><br>
+                    <h4 class="text-right" style="color:white; margin-right: 50px;">
+                        <a style="color:white;" href="{{ path('sonata_admin_dashboard') }}" aria-hidden="true">
+                            <b>Voltar</b>
+                        </a>
+                    </h4>
+                </div>
+            </div>
+            <br>
+        </div>
+
+    </div>
+
+{% endblock %}

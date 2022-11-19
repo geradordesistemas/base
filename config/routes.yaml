@@ -1,0 +1,51 @@
+application.project.security.provider.admin:
+    resource: '@ApplicationProjectSecurityAdminBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+application.project.security.provider.api:
+    resource: '@ApplicationProjectSecurityUserBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+application.project.content:
+    resource: '@ApplicationProjectContentBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+application.project.setting:
+    resource: '@ApplicationProjectSettingBundle/Resources/config/routes/routes.yaml'
+    prefix: /
+
+media:
+    resource: '@SonataMediaBundle/Resources/config/routing/media.xml'
+    prefix: /media
+
+controllers:
+    resource: ../src/Controller/
+    type: annotation
+
+kernel:
+    resource: ../src/Kernel.php
+    type: annotation
+
+#api_login_check:
+#    path: /api/login_check
+
+app.swagger_ui:
+    path: /api
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+app.swagger:
+    path: /api.json
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger }
+
+
+###############################################################################
+
+
+
+
+
+
+
+

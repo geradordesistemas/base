@@ -1,0 +1,3 @@
+project_security:
+  resource: "@ApplicationProjectSecurityUserBundle/Controller/"
+  type:     annotation

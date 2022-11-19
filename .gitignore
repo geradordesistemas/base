@@ -1,0 +1,41 @@
+###> symfony/framework-bundle ###
+/docker/mysql/data/
+#.env
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles
+/public/uploads/default
+
+/pub
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> jwt/keys ###
+./config/jwt/private.pem
+./config/jwt/public.pem
+###> jwt/keys ###
+
+
+###> docker/files ###
+/docker/mysql/data
+###> docker/files ###
+
+
+.idea
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

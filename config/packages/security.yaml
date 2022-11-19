@@ -1,0 +1,76 @@
+security:
+    enable_authenticator_manager: true
+
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: 'auto'
+            cost: 15
+
+    # ####################################################################################
+    # Provedores de Usuários
+    providers:
+
+        # Provedor administrativo responsável pelo acesso ao ADMIN
+        security.provider.admin.user:
+            entity:
+                class: App\Application\Project\SecurityAdminBundle\Entity\UserAdmin
+                property: email
+
+        # Provedor padrão responsável pelo acesso às rotas de API
+        security.provider.default.user:
+            entity:
+                class: App\Application\Project\SecurityUserBundle\Entity\User
+                property: email
+
+        # Conjunto de provedores que possuem acesso às rotas de API
+        security.provider.all.api:
+            chain:
+                providers: [ 'security.provider.default.user' , ]
+
+    # ####################################################################################
+    # Firewalls de Segurança
+    firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        # Firewall responsável pelas rotas rest API
+        api:
+            provider: security.provider.all.api
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+            access_denied_handler: App\Application\Project\SecurityUserBundle\Security\ApiAccessDeniedHandler
+
+        # Firewall responsável pelo ADMIN
+        admin:
+            pattern: /admin(.*)
+            lazy: true
+            provider: security.provider.admin.user
+            custom_authenticator: App\Application\Project\SecurityAdminBundle\Security\UserAuthenticator
+            access_denied_handler: App\Application\Project\SecurityAdminBundle\Security\AdminAccessDeniedHandler
+            logout:
+                path: admin_project_content_content_logout
+                target: /admin/login
+
+        web:
+            pattern: ^/
+            lazy: true
+            provider: security.provider.default.user
+            custom_authenticator: App\Application\Project\SecurityUserBundle\Security\UserAuthenticator
+            #access_denied_handler: App\Application\Project\SecurityUserBundle\Security\WebAccessDeniedHandler
+            logout:
+                path: web_logout
+                target: /web/login
+
+
+    access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: IS_AUTHENTICATED_FULLY }
+        #- { path: ^/api/register, roles: PUBLIC_ACCESS }
+        #- { path: ^/api/login, roles: PUBLIC_ACCESS }
+        #- { path: ^/api,       roles: PUBLIC_ACCESS }
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
+        - { path: ^/admin/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/web/login, roles: PUBLIC_ACCESS }
+        - { path: ^/web, roles: IS_AUTHENTICATED_FULLY }
