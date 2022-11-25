@@ -4,28 +4,22 @@ namespace App\Application\Project\SecurityUserBundle\Controller;
 
 use App\Application\Project\ContentBundle\Controller\Base\BaseApiController;
 use App\Application\Project\SecurityUserBundle\Entity\User;
-use Doctrine\Persistence\ManagerRegistry;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use OpenApi\Attributes as OA;
 
 
-#[OA\Tag(name: 'autenticação')]
+#[OA\Tag(name: 'Autenticação')]
 #[Route('/api/usuario', name: 'api_auth_usuario')]
 class AuthApiController extends BaseApiController
 {
 
+    /**
+     * Recupera Token JWT — Usuario.
+     * Recupera Token JWT — Usuario.
+     */
     #[OA\Response(
         response: 200,
         description: 'Return Token JWT',
@@ -72,7 +66,11 @@ class AuthApiController extends BaseApiController
     }
 
 
-    /** @throws ExceptionInterface|ReflectionException */
+    /**
+     * Recupera Recurso Autenticado — Usuario.
+     * Recupera Recurso Autenticado — Usuario.
+     * @throws ReflectionException
+     */
     #[OA\Response(
         response: 200,
         description: 'Return authenticated user',

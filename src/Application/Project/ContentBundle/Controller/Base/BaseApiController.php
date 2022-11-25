@@ -3,10 +3,10 @@
 namespace App\Application\Project\ContentBundle\Controller\Base;
 
 use App\Application\Project\ContentBundle\Service\ApiACL;
+use App\Application\Project\ContentBundle\Service\ObjectTransformer;
 use App\Application\Project\ContentBundle\Service\SerializerObjects;
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use ReflectionObject;
 use Sonata\MediaBundle\Provider\Pool;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class BaseApiController extends AbstractController
 {
     protected SerializerObjects $serializerObjects;
+    protected ObjectTransformer $objectTransformer;
 
     public function __construct(
         protected ApiACL $apiACL,
@@ -23,11 +24,11 @@ class BaseApiController extends AbstractController
         protected JWTTokenManagerInterface $JWTTokenManager,
         protected UserPasswordHasherInterface $passwordHasher,
         protected ValidatorInterface $validator,
-        protected ManagerRegistry $doctrine
+        protected ManagerRegistry $doctrine,
     )
     {
         $this->serializerObjects = new SerializerObjects(providerPool: $this->providerPool);
-
+        $this->objectTransformer = new ObjectTransformer($this->doctrine);
     }
 
     protected function transformParametersToObject($parameters): object
@@ -115,50 +116,13 @@ class BaseApiController extends AbstractController
     }
 
 
-
-
-
-
-
-    /**
-     * Class casting
-     *
-     * @param string|object $destination
-     * @param object $sourceObject
-     * @return object
-     */
-    function cast($destination, $sourceObject)
+    public function validateConstraintErros($object): bool|array
     {
-        if (is_string($destination)) {
-            $destination = new $destination();
-        }
-        $sourceReflection = new ReflectionObject($sourceObject);
-        $destinationReflection = new ReflectionObject($destination);
-        $sourceProperties = $sourceReflection->getProperties();
-        foreach ($sourceProperties as $sourceProperty) {
-            $sourceProperty->setAccessible(true);
-            $name = $sourceProperty->getName();
-            $value = $sourceProperty->getValue($sourceObject);
-            if ($destinationReflection->hasProperty($name)) {
-                $propDest = $destinationReflection->getProperty($name);
-                $propDest->setAccessible(true);
-                $propDest->setValue($destination,$value);
-            } else {
-                $destination->$name = $value;
-            }
-        }
-        return $destination;
-    }
-
-
-    public function validateConstraintErros(ValidatorInterface $validator, $object): bool|array
-    {
-        $errors = $validator->validate($object);
+        $errors = $this->validator->validate($object);
         if (!count($errors))
             return false;
 
         $responseErrors = [
-            'status' => false,
             'message' => 'Os seguintes erros foram encontrados!',
             'errors' => []
         ];
@@ -173,11 +137,6 @@ class BaseApiController extends AbstractController
 
         return $responseErrors;
     }
-
-
-
-
-
 
 
 }

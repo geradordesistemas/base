@@ -7,7 +7,6 @@ use App\Application\Project\SecurityUserBundle\Entity\User;
 use App\Application\Project\ContentBundle\Controller\Base\BaseApiController;
 use App\Application\Project\ContentBundle\Service\FilterDoctrine;
 use App\Application\Project\ContentBundle\Attributes\Acl as ACL;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectRepository;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\Query\QueryException;
 use ReflectionException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/usuario', name: 'api_usuario_')]
-#[OA\Tag(name: 'usuario', description: 'Acesso ao Usuário')]
+#[OA\Tag(name: 'Usuario')]
 #[ACL\Api(enable: true, title: 'Usuário', description: 'Permissões do modulo Usuário')]
 class UserApiController extends BaseApiController
 {
@@ -32,9 +30,13 @@ class UserApiController extends BaseApiController
         return $this->doctrine->getManager()->getRepository($this->getClass());
     }
 
-    /**@throws QueryException|ReflectionException */
-    #[OA\Parameter( name: 'pagina', description: 'Número da Página', in: 'query', required: false, allowEmptyValue: true, example: 1)]
-    #[OA\Parameter( name: 'paginaTamanho', description: 'Tamanho da Página', in: 'query', required: false, example: 10)]
+    /**
+     * Recupera a coleção de recursos — Usuario.
+     * Recupera a coleção de recursos — Usuario.
+     * @throws QueryException|ReflectionException
+     */
+    #[OA\Parameter( name: 'pagina', description: 'O número da página da coleção', in: 'query', required: false, allowEmptyValue: true, example: 1)]
+    #[OA\Parameter( name: 'paginaTamanho', description: 'O tamanho da página da coleção', in: 'query', required: false, example: 10)]
     #[OA\Response(
         response: 200,
         description: 'Return list',
@@ -72,41 +74,11 @@ class UserApiController extends BaseApiController
 
     }
 
-    /** @throws ReflectionException */
-    #[OA\Response(
-        response: 200,
-        description: 'Return list',
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'id', type: 'integer'),
-                new OA\Property(property: 'name', type: 'string'),
-                new OA\Property(property: 'email', type: 'string'),
-                new OA\Property(property: 'roles', type: 'object'),
-            ],
-            type: 'object'
-        )
-    )]
-    #[Route('/{id}', name: 'show', methods: ['GET'])]
-    #[ACL\Api(enable: true, title: 'Visualizar', description: 'Visualizar Usuário')]
-    public function showAction(Request $request, int $id): Response
-    {
-        $this->validateAccess("showAction");
-
-        $data = $this->getRepository()->find($id);
-        if (!$data)
-            return $this->json(['status' => false, 'message' => 'Usuário não encontrado!'], 404);
-
-        $response = $this->serializerObjects->normalizer($data, [
-            'id', 'name','email','roles',
-        ]);
-
-        return $this->json([
-            '@id' => $request->getPathInfo(),
-            'result' => $response,
-        ]);
-    }
-
-
+    /** ****************************************************************************************** */
+    /**
+     * Cria o Recurso — Usuario.
+     * Cria o Recurso — Usuario.
+     */
     #[OA\Response(
         response: 200,
         description: 'Return list',
@@ -176,7 +148,51 @@ class UserApiController extends BaseApiController
 
     }
 
+    /** ****************************************************************************************** */
+    /**
+     * Recupera o recurso — Usuario.
+     * Recupera o recurso — Usuario.
+     * @throws ReflectionException
+     */
+    #[OA\Parameter( name: 'id', description: 'Identificador do recurso', in: 'path')]
+    #[OA\Response(
+        response: 200,
+        description: 'Return list',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'id', type: 'integer'),
+                new OA\Property(property: 'name', type: 'string'),
+                new OA\Property(property: 'email', type: 'string'),
+                new OA\Property(property: 'roles', type: 'object'),
+            ],
+            type: 'object'
+        )
+    )]
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    #[ACL\Api(enable: true, title: 'Visualizar', description: 'Visualizar Usuário')]
+    public function showAction(Request $request, int $id): Response
+    {
+        $this->validateAccess("showAction");
 
+        $data = $this->getRepository()->find($id);
+        if (!$data)
+            return $this->json(['status' => false, 'message' => 'Usuário não encontrado!'], 404);
+
+        $response = $this->serializerObjects->normalizer($data, [
+            'id', 'name','email','roles',
+        ]);
+
+        return $this->json([
+            '@id' => $request->getPathInfo(),
+            'result' => $response,
+        ]);
+    }
+
+    /** ****************************************************************************************** */
+    /**
+     * Substitui o recurso — Usuario.
+     * Substitui o recurso — Usuario.
+     */
     #[OA\Response(
         response: 200,
         description: 'Return list',
@@ -246,21 +262,29 @@ class UserApiController extends BaseApiController
 
     }
 
+    /** ****************************************************************************************** */
+    /**
+     * Remove o recurso — Usuario.
+     * Remove o recurso — Usuario.
+     */
+    #[OA\Parameter( name: 'id', description: 'Identificador do recurso', in: 'path')]
+    #[OA\Response(response: 204, description: 'Recurso excluído')]
+    #[OA\Response(response: 404, description: 'Recurso não encontrado')]
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
     #[ACL\Api(enable: true, title: 'Deletar', description: 'Deletar Usuário')]
     public function deleteAction(int $id): Response
     {
         $this->validateAccess("deleteAction");
 
-        $data = $this->getRepository()->find($id);
-        if (!$data)
-            return $this->json(['status' => false, 'message' => 'Usuário não encontrado!'], 404);
+        $object = $this->getRepository()->find($id);
+        if (!$object)
+            return $this->json(['status' => false, 'message' => 'Usuário não encontrado.'], 404);
 
         $em = $this->doctrine->getManager();
-        $em->remove($data);
+        $em->remove($object);
         $em->flush();
 
-        return $this->json(['status' => true, 'message' => 'Usuário removido com sucesso!']);
+        return $this->json(['status' => true, 'message' => 'Usuário removido com sucesso.'], 204);
     }
 
 }
