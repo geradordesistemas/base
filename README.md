@@ -1,8 +1,8 @@
 # Gerador de Sistemas - Base
 
 [![php version](https://img.shields.io/badge/php-v8.1-blue?style=flat&logo=php)](php/composer.json#L6)
-[![build Status](https://github.com/ludofleury/blackflag/workflows/ci/badge.svg?branch=main)](https://github.com/ludofleury/blackflag/actions)
-[![phpstan](https://img.shields.io/badge/sonata_admin-level%208-brightgreen.svg?style=flat)](CONTRIBUTING.md#phpstan)
+[![phpstan](https://img.shields.io/badge/symfony-level%2010-brightgreen.svg?style=flat)](CONTRIBUTING.md#phpstan)
+[![phpstan](https://img.shields.io/badge/sonata_admin-level%2010-brightgreen.svg?style=flat)](CONTRIBUTING.md#phpstan)
 
 
 Fornece uma estrutura completa de a implementação de uma aplicação web.

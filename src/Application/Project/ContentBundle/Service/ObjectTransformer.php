@@ -106,6 +106,7 @@ class ObjectTransformer
                         }
                         $value = new ArrayCollection($collection);
                     }
+
                 }
 
                 $propDest->setValue($destination, $value);
@@ -160,24 +161,106 @@ class ObjectTransformer
     }
 
 
-
-
-
     public function ObjectToJson(object|array $data, array $attributes): array
     {
-        //dd($attributes);
 
-        $normalizer = new ObjectNormalizer();
+/*        $normalizer = new ObjectNormalizer();
         $encoder = new JsonEncoder();
         $serializer = new Serializer([$normalizer], [$encoder]);
 
         $response = $serializer->normalize( $data, 'json', [
             AbstractNormalizer::ATTRIBUTES => $attributes,
             'circular_reference_limit' => 5,
-        ]);
+        ]);*/
+
+        $response = [];
+
+        if(is_array($data)){
+            foreach ($data as $object) {
+                $response[] = $this->startNormalizer($object, $attributes);
+            }
+        }else{
+            $response = $this->startNormalizer($data, $attributes);
+        }
 
         return $response;
     }
 
+
+    protected function startNormalizer(object $object, array $attributes): array
+    {
+        /** Classe Reflection */
+        $classReflection = new ReflectionObject($object);
+
+        //dd($classReflection);
+
+        /** Pega todas as propriedades da classe */
+        $classProperties = $classReflection->getProperties();
+
+        $data = [];
+
+        /** Percorre todas as propriedades da Classe */
+        foreach ($classProperties as $property) {
+
+            /** Verifica se a propriedade da classe de destino pode ser mapeados */
+            if(!in_array($property->name, $attributes))
+                continue;
+
+            //$property->setAccessible(true);
+
+            /** nome da propriedade */
+            $name = $property->getName();
+
+            /** valor da propriedade */
+            $value = $property->getValue($object);
+
+            /** Caso sejá um relacionamento, traz os metadados */
+            $relationship = $this->getTypeRelationShip($property);
+
+            if($relationship)
+            {
+
+                if($relationship->type === "entity"){
+                    //dd($value, $relationship);
+                    $value = $this->getPropertyValueFromClass($value, $relationship->targetEntity, $relationship->targetPrimaryKey);
+                }
+
+                if($relationship->type === "collection"){
+                    $list = [];
+                    foreach ($value as $val){
+                        $val = $this->getPropertyValueFromClass($val, $relationship->targetEntity, $relationship->targetPrimaryKey);
+                        if($val)
+                            $list[] = $val;
+                    }
+                    $value = $list;
+                    //dd($value, $relationship);
+                }
+
+
+            }
+
+            $data[$name] = $value;
+
+
+
+            //dd($name, $value);
+        }
+
+        return $data;
+    }
+
+
+    protected function getPropertyValueFromClass($object, string $targetEntity, string $property)
+    {
+        if(!$object)
+            return null;
+
+        //dd($class, $targetEntity, $property);
+        $classReflection = new ReflectionClass($targetEntity);
+
+        $property = $classReflection->getProperty($property);
+
+        return $property->getValue($object);
+    }
 
 }

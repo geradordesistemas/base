@@ -6,8 +6,8 @@ nelmio_api_doc:
 #            - url: https://api.example.com/secured
 #            description: API over HTTPS
         info:
-            title: Aplicação Base
-            description: Essa é a descrição de minha aplicação!
+            title: Documentação API
+            description: Documentação das rotas API!
             version: 1.0.0
         components:
             securitySchemes:
