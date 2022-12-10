@@ -42,9 +42,10 @@ https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
     {{ parent() }}
 {#    <script type="text/javascript" src="{{ asset('js/custom-request-signer.js') }}"></script>#}
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{ asset('bundles/applicationprojectcontent/js/filters-api.js') }}"></script>
+
     <script>
         $( document ).ready(function() {
-
             /** Change Name Authorize */
             $('.btn.authorize.unlocked span').html('Autorização')
 
@@ -54,7 +55,6 @@ https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
             /** Remove Default Options */
             $(".opblock-tag.no-desc a span:contains('default')")
                 .parent().parent().parent().remove()
-
         });
 
     </script>
