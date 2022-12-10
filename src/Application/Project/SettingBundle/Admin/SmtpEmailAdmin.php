@@ -24,7 +24,7 @@ final class SmtpEmailAdmin extends BaseAdmin
 
     protected function configureRoutes(RouteCollectionInterface $collection): void
     {
-        //parent::configureRoutes($collection);
+        parent::configureRoutes($collection);
 
         /** Não Remove chamada - Faz controle de acesso painel admin */
         $collection->remove('delete');
