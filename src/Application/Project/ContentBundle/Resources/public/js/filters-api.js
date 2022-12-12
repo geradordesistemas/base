@@ -145,7 +145,7 @@ $( document ).ready(function() {
     </div>
 </span>
 
-<div class="filters" style="display: none;">
+<div class="filters" style="display: block;">
 ${template}
 </div>
 <br><br><br><br><br>

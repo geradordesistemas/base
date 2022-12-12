@@ -7,6 +7,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use ReflectionClass;
 use ReflectionObject;
 use ReflectionProperty;
+use Sonata\MediaBundle\Provider\Pool;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -18,6 +19,7 @@ class ObjectTransformer
 
     public function __construct(
         protected ManagerRegistry $doctrine,
+        protected Pool $providerPool
     )
     {
     }
@@ -163,16 +165,6 @@ class ObjectTransformer
 
     public function ObjectToJson(object|array $data, array $attributes): array
     {
-
-/*        $normalizer = new ObjectNormalizer();
-        $encoder = new JsonEncoder();
-        $serializer = new Serializer([$normalizer], [$encoder]);
-
-        $response = $serializer->normalize( $data, 'json', [
-            AbstractNormalizer::ATTRIBUTES => $attributes,
-            'circular_reference_limit' => 5,
-        ]);*/
-
         $response = [];
 
         if(is_array($data)){
@@ -242,13 +234,48 @@ class ObjectTransformer
             $data[$name] = $value;
 
 
-
             //dd($name, $value);
         }
+
+        if($classReflection->getName() === "App\Entity\SonataMediaMedia")
+            $data['url'] = $this->getMediaUrl($object);
+
+        if($classReflection->getName() === "App\Entity\SonataMediaGallery")
+            $data['midias'] = $this->getMedias($object);
 
         return $data;
     }
 
+
+    protected function getMedias($object)
+    {
+ //       dd($object->getGalleryItems()[0]);
+
+        $midias = [];
+        foreach ($object->getGalleryItems() as $item){
+            if($item->getMedia())
+                $midias[] = $item->getMedia()->getId();
+        }
+
+        return $midias;
+    }
+
+    protected function getMediaUrl($object)
+    {
+        $url = [];
+        $provider = $this->providerPool->getProvider($object->getProviderName());
+        $formats = $provider->getFormats();
+        $url['reference'] =  $provider->generatePublicUrl($object, 'reference');
+
+        foreach ($formats as $formatName => $format){
+            if(str_contains($formatName, 'admin'))
+                continue;
+
+            $url[$formatName] =  $provider->generatePublicUrl($object, $formatName);
+        }
+
+        return $url;
+    }
 
     protected function getPropertyValueFromClass($object, string $targetEntity, string $property)
     {

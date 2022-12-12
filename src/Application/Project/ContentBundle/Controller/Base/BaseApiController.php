@@ -5,10 +5,12 @@ namespace App\Application\Project\ContentBundle\Controller\Base;
 use App\Application\Project\ContentBundle\Service\ApiACL;
 use App\Application\Project\ContentBundle\Service\ObjectTransformer;
 use App\Application\Project\ContentBundle\Service\SerializerObjects;
+use App\Application\Project\MediaBundle\Service\MediaService;
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Sonata\MediaBundle\Provider\Pool;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -17,6 +19,7 @@ class BaseApiController extends AbstractController
 {
     protected SerializerObjects $serializerObjects;
     protected ObjectTransformer $objectTransformer;
+    protected MediaService $mediaService;
 
     public function __construct(
         protected ApiACL $apiACL,
@@ -25,10 +28,13 @@ class BaseApiController extends AbstractController
         protected UserPasswordHasherInterface $passwordHasher,
         protected ValidatorInterface $validator,
         protected ManagerRegistry $doctrine,
+        ContainerBagInterface $containerInterface,
+
     )
     {
         $this->serializerObjects = new SerializerObjects(providerPool: $this->providerPool);
-        $this->objectTransformer = new ObjectTransformer($this->doctrine);
+        $this->objectTransformer = new ObjectTransformer($this->doctrine, $this->providerPool);
+        $this->mediaService = new MediaService($this->doctrine, $containerInterface->get('kernel.project_dir'));
     }
 
     protected function transformParametersToObject($parameters): object
@@ -82,7 +88,6 @@ class BaseApiController extends AbstractController
     }
 
 
-
     /**
      * Validate access as routes
      * @param string $actionName
@@ -114,7 +119,6 @@ class BaseApiController extends AbstractController
 
         $this->denyAccessUnlessGranted($roleValidate);
     }
-
 
     public function validateConstraintErros($object): bool|array
     {
