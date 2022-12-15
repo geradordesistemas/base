@@ -85,7 +85,7 @@ class MediaApiController extends BaseApiController
     #[ACL\Api(enable: true, title: 'Listar', description: 'Listar Media')]
     public function listAction(Request $request): Response
     {
-        //$this->validateAccess(actionName: "listAction");
+        $this->validateAccess(actionName: "listAction");
 
         $filter = new FilterDoctrine(
             repository:  $this->getRepository(),
